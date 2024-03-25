@@ -31,12 +31,12 @@ app.add_middleware(
 
 
 @app.post("/llm-rag/list_docs")
-async def question():
+async def List_documents_available_in_DB():
     return main.list_docs_pg()
 
 
 @app.post("/llm-rag/upload_docs")
-async def create_upload_file(upload_file: UploadFile = File(...)):
+async def Upload_new_files_to_DB(upload_file: UploadFile = File(...)):
     if upload_file.content_type not in [
         "application/pdf",
         "application/msword",
@@ -52,14 +52,14 @@ async def create_upload_file(upload_file: UploadFile = File(...)):
 
 
 @app.post("/llm-rag/delete_doc")
-async def question(file_name: Optional[str] = "document1.pdf"):
+async def Delete_existing_files_from_DB(file_name: Optional[str] = "document1.pdf"):
     if file_name is None:
         return {"error": "Please provide a file name."}
     return main.delete_doc_pg(file_name)
 
 
 @app.post("/llm-rag/question")
-async def question_pg(
+async def QA_from_your_documents(
     query: Item, llm_model: str = Query("OpenAI", enum=["OpenAI", "LLM"])
 ):
     return main.question_pg(query.q, llm_model)

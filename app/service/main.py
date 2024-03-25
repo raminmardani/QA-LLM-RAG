@@ -1,18 +1,19 @@
 import warnings
 import os
+import psycopg2
 from huggingface_hub._login import _login
 from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain.vectorstores.pgvector import DistanceStrategy
 from langchain_community.document_loaders import DirectoryLoader
+from langchain_community.document_loaders import TextLoader
 from langchain_community.embeddings import HuggingFaceInstructEmbeddings
 from langchain_community.llms import HuggingFacePipeline
 from langchain_community.vectorstores.pgvector import PGVector
 from langchain_community.document_loaders.merge import MergedDataLoader
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-
-import psycopg2
+from langchain.text_splitter import CharacterTextSplitter
 
 _login(token=os.environ["HUGGINGFACE_TOKEN"], add_to_git_credential=False)
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -56,7 +57,6 @@ def list_docs_pg() -> list:
 def upload_file_pg(file):
     filename = file.filename
     file_contents = file.file.read()
-
     conn = psycopg2.connect(
         user=os.environ["PGVECTOR_USER"],
         password=os.environ["PGVECTOR_PASSWORD"],
@@ -127,7 +127,6 @@ def question_pg(query: str, llm) -> str:
             model_name="gpt-3.5-turbo-0301",
             temperature=0,
             top_p=0.95,
-            repetition_penalty=1.15,
         )
 
         instructor_embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
@@ -146,6 +145,8 @@ def question_pg(query: str, llm) -> str:
             temperature=0,  # Set the temperature parameter for controlling randomness (0 means deterministic)
             top_p=0.95,  # Set the top_p parameter for controlling the nucleus sampling (higher values make output more focused)
             repetition_penalty=1.15,  # Set the repetition_penalty to control the likelihood of repeated words or phrases
+            truncation=True,  # Truncate the input to the model to the maximum length of the model
+            padding="max_length",  # Pad the input to the model to the maximum length of the model
         )
         local_llm = HuggingFacePipeline(pipeline=pipe)
         embedding_model_name = "hkunlp/instructor-base"
@@ -188,7 +189,9 @@ def question_pg(query: str, llm) -> str:
         loader_pdf = DirectoryLoader(output_folder, glob="./*.pdf")
         loader_doc = DirectoryLoader(output_folder, glob="./*.doc")
         loader_docx = DirectoryLoader(output_folder, glob="./*.docx")
-        loader_txt = DirectoryLoader(output_folder, glob="./*.txt")
+        loader_txt = DirectoryLoader(
+            output_folder, glob="./*.txt", loader_cls=TextLoader
+        )
 
         loader = MergedDataLoader(
             loaders=[loader_pdf, loader_doc, loader_docx, loader_txt]
@@ -196,6 +199,15 @@ def question_pg(query: str, llm) -> str:
         documents = loader.load()
         if len(documents) == 0:
             return "No documents were found in the database. Please upload a document first and try again."
+        text_splitter = CharacterTextSplitter(
+            separator="\n\n",
+            chunk_size=2000,
+            chunk_overlap=400,
+            length_function=len,
+            is_separator_regex=False,
+        )
+
+        documents = text_splitter.split_documents(documents)
 
         connection_string = PGVector.connection_string_from_db_params(
             driver=os.environ.get("PGVECTOR_DRIVER", "psycopg2"),

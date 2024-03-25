@@ -11,6 +11,12 @@ RUN apt-get update \
   && apt-get -y install tesseract-ocr && apt-get -y install ffmpeg libsm6 libxext6 # required for opencv
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
+
+RUN apt-get --no-install-recommends install libreoffice -y
+RUN apt-get install -y libreoffice-java-common
+
+# Method2 - additionally installing unoconv
+RUN apt-get install unoconv
 # download appropriate package for the OS version
 # Debian 11
 RUN curl https://packages.microsoft.com/config/debian/11/prod.list  \
