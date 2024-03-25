@@ -37,8 +37,16 @@ async def question():
 
 @app.post("/llm-rag/upload_docs")
 async def create_upload_file(upload_file: UploadFile = File(...)):
-    if upload_file.content_type not in ["application/pdf"]:
-        raise HTTPException(400, detail="Invalid document type. Only PDFs are allowed.")
+    if upload_file.content_type not in [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "text/plain",
+    ]:
+        raise HTTPException(
+            400,
+            detail="Invalid document type. Only PDF, Doc, Docx, and txt files are allowed.",
+        )
     else:
         return main.upload_file_pg(upload_file)
 

@@ -16,6 +16,7 @@ psycopg2==2.9.9
 psycopg2-binary==2.9.9
 unstructured
 unstructured[pdf]
+unstructured[docx]
 opencv-python-headless
 langchain_openai
 sentence_transformers==2.2.2

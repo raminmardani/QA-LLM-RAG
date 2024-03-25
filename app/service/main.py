@@ -9,7 +9,9 @@ from langchain_community.document_loaders import DirectoryLoader
 from langchain_community.embeddings import HuggingFaceInstructEmbeddings
 from langchain_community.llms import HuggingFacePipeline
 from langchain_community.vectorstores.pgvector import PGVector
+from langchain_community.document_loaders.merge import MergedDataLoader
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+
 import psycopg2
 
 _login(token=os.environ["HUGGINGFACE_TOKEN"], add_to_git_credential=False)
@@ -121,13 +123,20 @@ def delete_doc_pg(file_name) -> str:
 def question_pg(query: str, llm) -> str:
     if llm == "OpenAI":
 
-        local_llm = ChatOpenAI(model_name="gpt-3.5-turbo-0301", temperature=0)
+        local_llm = ChatOpenAI(
+            model_name="gpt-3.5-turbo-0301",
+            temperature=0,
+            top_p=0.95,
+            repetition_penalty=1.15,
+        )
 
         instructor_embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
 
     else:
         model_name = "google/flan-t5-base"
-        tokenizer = AutoTokenizer.from_pretrained(model_name, return_full_text=True)
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_name, return_full_text=True, model_max_length=512, truncation=True
+        )
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
         pipe = pipeline(
             "text2text-generation",  # Specify the task as text-to-text generation
@@ -155,6 +164,7 @@ def question_pg(query: str, llm) -> str:
         cur = conn.cursor()
         cur.execute("SELECT file_name, file_content FROM files_table")
         documents = cur.fetchall()
+
         # Close the cursor and the connection
         cur.close()
         conn.close()
@@ -175,7 +185,14 @@ def question_pg(query: str, llm) -> str:
 
         files = os.listdir(output_folder)
         # Check if the output folder exists, if not, create it
-        loader = DirectoryLoader(output_folder, glob="./*.pdf")
+        loader_pdf = DirectoryLoader(output_folder, glob="./*.pdf")
+        loader_doc = DirectoryLoader(output_folder, glob="./*.doc")
+        loader_docx = DirectoryLoader(output_folder, glob="./*.docx")
+        loader_txt = DirectoryLoader(output_folder, glob="./*.txt")
+
+        loader = MergedDataLoader(
+            loaders=[loader_pdf, loader_doc, loader_docx, loader_txt]
+        )
         documents = loader.load()
         if len(documents) == 0:
             return "No documents were found in the database. Please upload a document first and try again."
