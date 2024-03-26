@@ -22,3 +22,10 @@ services:
         - variables.env
       depends_on:
         - postgres
+  ui:
+    build: ui/
+    depends_on:
+      - api
+      - postgres
+    ports: 
+        - 8501:8501

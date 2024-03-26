@@ -141,7 +141,7 @@ def question_pg(query: str, llm) -> str:
             "text2text-generation",  # Specify the task as text-to-text generation
             model=model,  # Use the previously initialized model
             tokenizer=tokenizer,  # Use the previously initialized tokenizer
-            max_length=2048,  # Set the maximum length for generated text to 512 tokens
+            max_length=512,  # Set the maximum length for generated text to 512 tokens
             temperature=0,  # Set the temperature parameter for controlling randomness (0 means deterministic)
             top_p=0.95,  # Set the top_p parameter for controlling the nucleus sampling (higher values make output more focused)
             repetition_penalty=1.15,  # Set the repetition_penalty to control the likelihood of repeated words or phrases
@@ -186,11 +186,20 @@ def question_pg(query: str, llm) -> str:
 
         files = os.listdir(output_folder)
         # Check if the output folder exists, if not, create it
-        loader_pdf = DirectoryLoader(output_folder, glob="./*.pdf")
-        loader_doc = DirectoryLoader(output_folder, glob="./*.doc")
-        loader_docx = DirectoryLoader(output_folder, glob="./*.docx")
+        loader_pdf = DirectoryLoader(
+            output_folder, glob="./*.pdf", use_multithreading=True
+        )
+        loader_doc = DirectoryLoader(
+            output_folder, glob="./*.doc", use_multithreading=True
+        )
+        loader_docx = DirectoryLoader(
+            output_folder, glob="./*.docx", use_multithreading=True
+        )
         loader_txt = DirectoryLoader(
-            output_folder, glob="./*.txt", loader_cls=TextLoader
+            output_folder,
+            glob="./*.txt",
+            loader_cls=TextLoader,
+            use_multithreading=True,
         )
 
         loader = MergedDataLoader(
@@ -241,7 +250,9 @@ def question_pg(query: str, llm) -> str:
         )
         out = qa_chain(query)
         out["result"] = out["result"].replace(r"\"", " ")
-
-        return out
+        if out["result"] == "I am sorry, this information is not in my knowledge base.":
+            return out["result"]
+        else:
+            return out
     except psycopg2.Error as e:
         return f"Error retrieving documents from the database: {e}"

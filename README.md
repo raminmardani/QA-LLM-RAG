@@ -16,9 +16,13 @@ In main folder:
  docker-compose up --build
 ```
 
-This creates a docker container which handles the swagger page on:
+UI page:
 
-http://127.0.0.1:8100/llm-rag/docs
+http://localhost:8501/
+
+Swagger page:
+
+http://localhost:8100/llm-rag/docs
 
 ## Workflow
 
