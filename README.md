@@ -1,35 +1,49 @@
-# QA-LLM-RAG
+# Document-based Q&A System
 
-This is a microservice with Vector Database and Embedding MOdel
+This project is a web-based application that allows users to upload documents, delete them, and ask questions based on the content of the uploaded documents. It utilizes a backend service to process documents and answer questions using Large Language Models (LLMs).
 
-You will be able to load documents to vector DB.
+## Features
 
-You will be be able to ask chat questions and get answers based on docs stored in vector DB.
+- **Upload Documents**: Users can upload documents in various formats (PDF, DOC, DOCX, TXT) for processing.
+- **View Uploaded Documents**: Displays a list of currently uploaded documents.
+- **Delete Documents**: Allows users to remove documents from the system.
+- **Ask Questions**: Users can ask questions, and the system will provide answers based on the content of the uploaded documents.
+- **Choose LLM Model**: Users can select which LLM model to use for answering questions.
 
-Postman Collection is inculded in the test folder.
+## Installation
 
-## How to run?
+To run this project, you will need Python and Docker installed on your system. Follow these steps:
 
-In main folder:
+1. Clone the repository:
 
 ```bash
- docker-compose up --build
+git clone https://github.com/raminmardani/QA-LLM-RAG
 ```
 
-UI page:
+2. Navigate to the project directory:
 
-http://localhost:8501/
+```bash
+cd QA-LLM-RAG
+```
 
-Swagger page:
+3. Deploy the docker locally:
 
-http://localhost:8100/llm-rag/docs
+```bash
+docker-compose up --build
+```
 
-## Workflow
+## Usage
 
-![Alt text](image.png)
+After starting the application, navigate to the URL `http://localhost:8501`. From there, you can use the web interface to upload documents, view the list of uploaded documents, delete documents, and ask questions.
 
-![Alt text](image-1.png)
+## Backend Service
 
-## LLM
+The application relies on a backend service specified by the `http://localhost:8100/llm-rag/docs`. This service should expose endpoints for listing documents, uploading documents, deleting documents, and answering questions.
 
-Google Flan T5 XL
+## Workflow & Functionality Map
+
+![Alt text](ui/func_map.png)
+
+![Alt text](ui/image.png)
+
+![Alt text](ui/image-1.png)

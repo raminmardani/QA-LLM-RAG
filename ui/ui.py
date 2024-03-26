@@ -50,7 +50,7 @@ st.write(f"Service Status: {status}")
 
 
 # List documents
-st.header("Available Documents in the knowledge base")
+st.header("Uploaded Documents")
 # Check if the session state variable has changed to refresh the document list
 documents = (
     list_documents()
@@ -70,14 +70,14 @@ if st.button("Refresh Document List"):
     st.session_state["refresh_docs"] += 1
 
 # Upload document
-st.header("Upload a New Document to the knowledge base")
+st.header("Upload a New Document")
 uploaded_file = st.file_uploader("Choose a file", type=["pdf", "doc", "docx", "txt"])
 if uploaded_file is not None:
     upload_response = upload_document(uploaded_file)
     st.write(upload_response)
 
 # Delete document
-st.header("Delete a Document from the knowledge base")
+st.header("Delete a Document")
 file_name_to_delete = st.text_input("Enter the file name to delete")
 if st.button("Delete Document"):
     delete_response = delete_document(file_name_to_delete)

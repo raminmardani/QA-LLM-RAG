@@ -187,19 +187,20 @@ def question_pg(query: str, llm) -> str:
         files = os.listdir(output_folder)
         # Check if the output folder exists, if not, create it
         loader_pdf = DirectoryLoader(
-            output_folder, glob="./*.pdf", use_multithreading=True
+            output_folder, glob="./*.pdf", use_multithreading=True, silent_errors=True
         )
         loader_doc = DirectoryLoader(
-            output_folder, glob="./*.doc", use_multithreading=True
+            output_folder, glob="./*.doc", use_multithreading=True, silent_errors=True
         )
         loader_docx = DirectoryLoader(
-            output_folder, glob="./*.docx", use_multithreading=True
+            output_folder, glob="./*.docx", use_multithreading=True, silent_errors=True
         )
         loader_txt = DirectoryLoader(
             output_folder,
             glob="./*.txt",
             loader_cls=TextLoader,
             use_multithreading=True,
+            silent_errors=True,
         )
 
         loader = MergedDataLoader(
