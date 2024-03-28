@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic
 import datetime
 from pydantic import BaseModel
-from service import main
 from typing import Optional
 
 ################################################## FASTAPI ########################################

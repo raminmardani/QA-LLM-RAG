@@ -50,7 +50,7 @@ st.write(f"Service Status: {status}")
 
 
 # List documents
-st.header("Uploaded Documents")
+st.header("Available Documents")
 # Check if the session state variable has changed to refresh the document list
 documents = (
     list_documents()
@@ -70,7 +70,7 @@ if st.button("Refresh Document List"):
     st.session_state["refresh_docs"] += 1
 
 # Upload document
-st.header("Upload a New Document")
+st.header("Upload a New Document to the")
 uploaded_file = st.file_uploader("Choose a file", type=["pdf", "doc", "docx", "txt"])
 if uploaded_file is not None:
     upload_response = upload_document(uploaded_file)
@@ -98,4 +98,5 @@ if st.button("Get Answer"):
 
         # Now that we have the answer, clear the loading message
         # and display the answer instead
-        st.write("Answer:", answer)
+        st.subheader("Answer:")
+        st.json(answer)

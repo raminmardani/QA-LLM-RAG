@@ -1,6 +1,9 @@
 import warnings
 import os
 import psycopg2
+import nltk
+
+nltk.download("punkt")
 from huggingface_hub._login import _login
 from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
 from langchain.chains import RetrievalQA
@@ -14,6 +17,7 @@ from langchain_community.vectorstores.pgvector import PGVector
 from langchain_community.document_loaders.merge import MergedDataLoader
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
+from langchain_community.document_loaders import PyPDFLoader
 
 _login(token=os.environ["HUGGINGFACE_TOKEN"], add_to_git_credential=False)
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -124,7 +128,7 @@ def question_pg(query: str, llm) -> str:
     if llm == "OpenAI":
 
         local_llm = ChatOpenAI(
-            model_name="gpt-3.5-turbo-0301",
+            model_name="gpt-4-0125-preview",
             temperature=0,
             top_p=0.95,
         )
@@ -187,7 +191,11 @@ def question_pg(query: str, llm) -> str:
         files = os.listdir(output_folder)
         # Check if the output folder exists, if not, create it
         loader_pdf = DirectoryLoader(
-            output_folder, glob="./*.pdf", use_multithreading=True, silent_errors=True
+            output_folder,
+            glob="./*.pdf",
+            use_multithreading=True,
+            silent_errors=True,
+            loader_cls=PyPDFLoader,
         )
         loader_doc = DirectoryLoader(
             output_folder, glob="./*.doc", use_multithreading=True, silent_errors=True
@@ -252,7 +260,7 @@ def question_pg(query: str, llm) -> str:
         out = qa_chain(query)
         out["result"] = out["result"].replace(r"\"", " ")
         if out["result"] == "I am sorry, this information is not in my knowledge base.":
-            return out["result"]
+            return {"result": out["result"]}
         else:
             return out
     except psycopg2.Error as e:
