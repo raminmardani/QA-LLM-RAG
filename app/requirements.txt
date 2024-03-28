@@ -1,17 +1,43 @@
+# Web framework for building APIs
 fastapi==0.85.1
+
+# Integration with Hugging Face's model hub
 huggingface_hub==0.16.4
+
+# Libraries for working with language models
 langchain==0.0.352
 langchain_community==0.0.20
 langchain_openai==0.0.6
-nltk==3.8.1
-psycopg2==2.9.9
-pydantic==1.10.9
-transformers==4.34.0
-uvicorn==0.29.0
-python-multipart==0.0.6
-torch==2.1.2
-unstructured==0.7.12
-pypdf==4.1.0
-rapidocr-onnxruntime==1.3.15
-pgvector== 0.2.5
 
+# Natural language processing toolkit
+nltk==3.8.1
+
+# PostgreSQL adapter for Python
+psycopg2==2.9.9
+
+# Data validation and settings management using Python type annotations
+pydantic==1.10.9
+
+# Library for state-of-the-art machine learning models
+transformers==4.34.0
+
+# ASGI server for hosting your apps
+uvicorn==0.29.0
+
+# Parser for multipart/form-data
+python-multipart==0.0.6
+
+# Deep learning framework
+torch==2.1.2
+
+# Work with unstructured data
+unstructured==0.7.12
+
+# PDF manipulation
+pypdf==4.1.0
+
+# OCR tools based on ONNX runtime
+rapidocr-onnxruntime==1.3.15
+
+# Vector similarity search in Postgres
+pgvector==0.2.5 
