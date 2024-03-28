@@ -197,12 +197,8 @@ def question_pg(query: str, llm) -> str:
             silent_errors=True,
             loader_cls=PyPDFLoader,
         )
-        loader_doc = DirectoryLoader(
-            output_folder, glob="./*.doc", use_multithreading=True, silent_errors=True
-        )
-        loader_docx = DirectoryLoader(
-            output_folder, glob="./*.docx", use_multithreading=True, silent_errors=True
-        )
+        loader_doc = DirectoryLoader(output_folder, glob="./*.doc")
+        loader_docx = DirectoryLoader(output_folder, glob="./*.docx")
         loader_txt = DirectoryLoader(
             output_folder,
             glob="./*.txt",
@@ -210,7 +206,6 @@ def question_pg(query: str, llm) -> str:
             use_multithreading=True,
             silent_errors=True,
         )
-
         loader = MergedDataLoader(
             loaders=[loader_pdf, loader_doc, loader_docx, loader_txt]
         )
