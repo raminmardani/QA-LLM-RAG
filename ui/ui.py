@@ -65,12 +65,12 @@ if "refresh_docs" not in st.session_state:
     st.session_state["refresh_docs"] = 0
 
 # Button to refresh the document list
-if st.button("Refresh Document List"):
+if st.button("Refresh"):
     # Increment the session state variable to trigger a refresh
     st.session_state["refresh_docs"] += 1
 
 # Upload document
-st.header("Upload a New Document to the")
+st.header("Upload a New Document")
 uploaded_file = st.file_uploader("Choose a file", type=["pdf", "doc", "docx", "txt"])
 if uploaded_file is not None:
     upload_response = upload_document(uploaded_file)

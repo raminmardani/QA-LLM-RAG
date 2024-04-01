@@ -13,7 +13,7 @@ from langchain_community.embeddings import HuggingFaceInstructEmbeddings
 from langchain_community.llms import HuggingFacePipeline
 from langchain_community.vectorstores.pgvector import PGVector
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # Suppress specific warnings and download necessary NLTK data
 nltk.download("punkt")
@@ -126,7 +126,7 @@ def question_pg(query: str, llm) -> str:
             return "No documents were found in the database. Please upload a document first and try again."
 
         # Split and embed documents for retrieval
-        text_splitter = CharacterTextSplitter(separator="\n\n", chunk_size=2000, chunk_overlap=400, length_function=len, is_separator_regex=False)
+        text_splitter =RecursiveCharacterTextSplitter(chunk_size=2000,chunk_overlap=200,length_function=len,is_separator_regex=False,)
         documents = text_splitter.split_documents(documents)
         connection_string = PGVector.connection_string_from_db_params(driver=os.environ.get("PGVECTOR_DRIVER", "psycopg2"), host=os.environ["PGVECTOR_HOST"], port=int(os.environ["PGVECTOR_PORT"]), database=os.environ["PGVECTOR_DB"], user=os.environ["PGVECTOR_USER"], password=os.environ["PGVECTOR_PASSWORD"])
         db = PGVector.from_documents(embedding=instructor_embeddings, documents=documents, collection_name="files_table", distance_strategy=DistanceStrategy.COSINE, connection_string=connection_string, pre_delete_collection=True)
