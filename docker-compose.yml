@@ -10,22 +10,24 @@ services:
     volumes:
       - ./db/data:/var/lib/postgresql/data
       - ./db/init_pgvector.sql:/docker-entrypoint-initdb.d/init_pgvector.sql
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD: "trust"
     env_file:
       - variables.env
   api:
-      build:
-        context: .
-        dockerfile: app/Dockerfile
-      ports:
-        - "8100:8100"
-      env_file:
-        - variables.env
-      depends_on:
-        - postgres
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    ports:
+      - "8100:8100"
+    env_file:
+      - variables.env
+    depends_on:
+      - postgres
   ui:
     build: ui/
     depends_on:
       - api
       - postgres
-    ports: 
-        - 8501:8501
+    ports:
+      - 8501:8501
