@@ -11,7 +11,7 @@ services:
       - ./db/data:/var/lib/postgresql/data
       - ./db/init_pgvector.sql:/docker-entrypoint-initdb.d/init_pgvector.sql
     environment:
-      - POSTGRES_HOST_AUTH_METHOD: "trust"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
     env_file:
       - variables.env
   api:
