@@ -26,7 +26,11 @@ git clone https://github.com/raminmardani/QA-LLM-RAG
 cd QA-LLM-RAG
 ```
 
-3. Deploy the docker locally:
+3. Replace your API keys:
+
+You need to replace your API keys of HuggingFace and OpenAI in the variables.env file to be able to run this model without error.
+
+4. Deploy the docker locally:
 
 ```bash
 docker-compose up --build
