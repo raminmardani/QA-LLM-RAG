@@ -2,6 +2,7 @@ import warnings
 import os
 import psycopg2
 import nltk
+import torch
 from huggingface_hub import login as hf_login
 from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
 from langchain.chains import RetrievalQA
@@ -97,9 +98,9 @@ def question_pg(query: str, llm) -> str:
         model_name = "google/flan-t5-base"
         tokenizer = AutoTokenizer.from_pretrained(model_name, return_full_text=True, model_max_length=512, truncation=True)
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
-        pipe = pipeline("text2text-generation", model=model, tokenizer=tokenizer, max_length=512, temperature=0, top_p=0.95, repetition_penalty=1.15, truncation=True, padding="max_length")
+        pipe = pipeline("text2text-generation", model=model, tokenizer=tokenizer, max_length=512, temperature=0, top_p=0.95, repetition_penalty=1.15)
         local_llm = HuggingFacePipeline(pipeline=pipe)
-        instructor_embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-base", model_kwargs={"device": "cpu"})
+        instructor_embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-base", model_kwargs={"device":  "cuda:0" if torch.cuda.is_available() else "cpu"})
 
     try:
         # Process documents for querying

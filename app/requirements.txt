@@ -20,7 +20,8 @@ pydantic==1.10.9
 
 # Library for state-of-the-art machine learning models
 transformers==4.34.0
-
+sentence-transformers==2.2.2
+InstructorEmbedding==1.0.1
 # ASGI server for hosting your apps
 uvicorn==0.29.0
 
